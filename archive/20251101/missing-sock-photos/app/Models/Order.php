@@ -1,0 +1,126 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Order extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'order_number',
+        'registration_id',
+        'child_id',
+        'main_package_id',
+        'main_package_price_cents',
+        'second_package_id',
+        'second_package_price_cents',
+        'third_package_id',
+        'third_package_price_cents',
+        'sibling_package_id',
+        'sibling_package_price_cents',
+        'sibling_special_fee_cents',
+        'four_poses_upgrade',
+        'four_poses_upgrade_price_cents',
+        'pose_perfection',
+        'pose_perfection_price_cents',
+        'premium_retouch',
+        'premium_retouch_price_cents',
+        'retouch_specification',
+        'class_picture_size',
+        'class_picture_price_cents',
+        'subtotal_cents',
+        'shipping_cents',
+        'discount_cents',
+        'coupon_code',
+        'total_cents',
+    ];
+
+    protected $casts = [
+        'four_poses_upgrade' => 'boolean',
+        'pose_perfection' => 'boolean',
+        'premium_retouch' => 'boolean',
+        'main_package_price_cents' => 'integer',
+        'subtotal_cents' => 'integer',
+        'total_cents' => 'integer',
+    ];
+
+    /**
+     * Boot method to generate order number
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($order) {
+            if (!$order->order_number) {
+                $order->order_number = static::generateOrderNumber();
+            }
+        });
+    }
+
+    /**
+     * Generate unique order number
+     */
+    public static function generateOrderNumber(): string
+    {
+        $year = now()->year;
+        $count = static::whereYear('created_at', $year)->count() + 1;
+        
+        return 'ORD-' . $year . '-' . str_pad($count, 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Get the registration
+     */
+    public function registration()
+    {
+        return $this->belongsTo(Registration::class);
+    }
+
+    /**
+     * Get the child
+     */
+    public function child()
+    {
+        return $this->belongsTo(Child::class);
+    }
+
+    /**
+     * Get the main package
+     */
+    public function mainPackage()
+    {
+        return $this->belongsTo(Package::class, 'main_package_id');
+    }
+
+    /**
+     * Get add-ons
+     */
+    public function addOns()
+    {
+        return $this->belongsToMany(AddOn::class, 'order_add_ons')
+            ->withPivot(['quantity', 'price_cents'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get total in dollars
+     */
+    public function getTotalAttribute(): float
+    {
+        return $this->total_cents / 100;
+    }
+
+    /**
+     * Get formatted total
+     */
+    public function getFormattedTotalAttribute(): string
+    {
+        return '$' . number_format($this->total_cents / 100, 2);
+    }
+}
+

@@ -1,0 +1,292 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Playfair+Display:wght@600;700&family=Inter:wght@400;500&display=swap');
+
+@layer base {
+  :root {
+    /* Primary Colors - Coral Orange */
+    --primary-coral: #FF5E3F;
+    --primary-coral-hover: #E84A2F;
+    --primary-coral-light: #FFE5E0;
+    --primary-coral-dark: #CC4B32;
+    
+    /* Accent Colors - Golden Yellow */
+    --accent-golden: #F1BF61;
+    --accent-golden-hover: #E5B04D;
+    --accent-golden-light: #F9E8C0;
+    --accent-golden-dark: #C99A4E;
+    
+    /* Background Colors */
+    --bg-main: #ECE9E6;
+    --bg-main-light: #F5F3F1;
+    --bg-main-dark: #D9D5D0;
+    
+    /* Standard Colors */
+    --white: #FFFFFF;
+    --gray-900: #2C3E50;
+    --gray-100: #F8F9FA;
+    --gray-200: #ecedf3;
+  }
+  
+  body {
+    @apply font-sans text-gray-800 bg-[#ECE9E6] antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-semibold text-gray-900;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Remove default focus outline, we'll use custom */
+  *:focus {
+    outline: none;
+  }
+  
+  /* Custom focus styles */
+  *:focus-visible {
+    @apply outline-2 outline-[#FF5E3F] outline-offset-2 rounded;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-base cursor-pointer inline-flex items-center justify-center;
+  }
+  
+  .btn-primary {
+    @apply bg-[#FF5E3F] text-white hover:bg-[#E84A2F] shadow-sm hover:shadow-md;
+    @apply active:transform active:translate-y-0 hover:-translate-y-0.5;
+  }
+  
+  .btn-primary:disabled {
+    @apply bg-gray-400 cursor-not-allowed shadow-none transform-none;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-[#F1BF61] border-2 border-[#F1BF61] hover:bg-[#F9E8C0];
+  }
+  
+  .btn-accent {
+    @apply bg-[#F1BF61] text-white hover:bg-[#E5B04D] shadow-sm hover:shadow-md;
+  }
+  
+  .btn-ghost {
+    @apply bg-transparent text-gray-700 hover:bg-gray-100 shadow-none;
+  }
+  
+  .btn-lg {
+    @apply px-8 py-4 text-lg;
+  }
+  
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-base;
+  }
+  
+  .card-hover {
+    @apply hover:-translate-y-1;
+  }
+  
+  /* Container */
+  .container-custom {
+    @apply w-full mx-auto px-4;
+    max-width: 1280px;
+  }
+  
+  @screen md {
+    .container-custom {
+      @apply px-6;
+    }
+  }
+  
+  @screen lg {
+    .container-custom {
+      @apply px-8;
+    }
+  }
+  
+  /* Section spacing */
+  .section {
+    @apply py-12;
+  }
+  
+  @screen md {
+    .section {
+      @apply py-16;
+    }
+  }
+  
+  @screen lg {
+    .section {
+      @apply py-20;
+    }
+  }
+  
+  /* Hero heading */
+  .hero-heading {
+    @apply font-serif font-semibold text-5xl md:text-6xl text-gray-900;
+    line-height: 1.1;
+  }
+  
+  /* Input fields */
+  .input {
+    @apply w-full px-4 py-3 border-2 border-gray-400 rounded-lg;
+    @apply focus:border-[#FF5E3F] focus:ring-4 focus:ring-[#FFE5E0];
+    @apply transition-all duration-base;
+  }
+  
+  .input:disabled {
+    @apply bg-gray-100 text-gray-600 cursor-not-allowed;
+  }
+  
+  .input.error {
+    @apply border-error focus:ring-error-light;
+  }
+  
+  /* Alerts */
+  .alert {
+    @apply p-4 rounded-lg border-l-4 mb-4 flex items-start;
+  }
+  
+  .alert-success {
+    @apply bg-success-light border-success text-success-dark;
+  }
+  
+  .alert-warning {
+    @apply bg-warning-light border-warning text-warning-dark;
+  }
+  
+  .alert-error {
+    @apply bg-error-light border-error text-error-dark;
+  }
+  
+  .alert-info {
+    @apply bg-info-light border-info text-info-dark;
+  }
+  
+  /* Navigation */
+  .nav-link {
+    @apply text-gray-700 hover:text-[#FF5E3F] transition-colors duration-base;
+    @apply font-medium;
+  }
+  
+  .nav-link.active {
+    @apply text-[#FF5E3F];
+  }
+}
+
+@layer utilities {
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #FF5E3F 0%, #E84A2F 100%);
+  }
+  
+  .bg-gradient-accent {
+    background: linear-gradient(135deg, #F1BF61 0%, #E5B04D 100%);
+  }
+  
+  /* Text gradient */
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #FF5E3F 0%, #F1BF61 100%);
+  }
+  
+  /* Custom scrollbar */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-gray-200 rounded;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 rounded hover:bg-gray-500;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.4s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+

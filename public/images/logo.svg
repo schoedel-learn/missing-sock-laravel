@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" fill="none">
+  <!-- Background -->
+  <rect width="400" height="100" fill="#2e6da4" rx="8"/>
+  
+  <!-- Camera Icon -->
+  <g transform="translate(20, 25)">
+    <rect x="10" y="15" width="30" height="25" rx="3" fill="white" opacity="0.95"/>
+    <circle cx="25" cy="27.5" r="7" fill="#039dcf"/>
+    <rect x="5" y="10" width="5" height="5" rx="1" fill="white" opacity="0.95"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="70" y="45" font-family="Nunito, sans-serif" font-size="24" font-weight="700" fill="white">
+    The Missing Sock
+  </text>
+  <text x="70" y="70" font-family="Nunito, sans-serif" font-size="14" font-weight="400" fill="white" opacity="0.9">
+    Photography
+  </text>
+</svg>

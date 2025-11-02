@@ -1,0 +1,59 @@
+You are a Laravel architect. I’m building a modular Laravel app to replace GotPhoto, a photography sales platform. I want you to scaffold the project using domain-driven modules and integrate the following features and packages.
+
+## Project Goal
+Build a modular Laravel application that replicates GotPhoto’s functionality for school and event photographers. The app will run on a VPS and serve galleries either locally or via proxied S3-compatible storage.
+
+## Directory Structure
+Create a `Modules` folder under `app/` with the following submodules:
+- Job
+- Subject
+- Image
+- Gallery
+- Shop
+- Order
+- Marketing
+- Analytics
+- Admin
+- Integration
+
+Each module should include:
+- Http/Controllers
+- Http/Requests
+- Http/Resources
+- Models
+- Services
+- Policies
+- routes.php
+
+## Mail Abstraction
+Implement a `MailServiceInterface` with provider-specific implementations (e.g., SendGrid, Mailgun) using Guzzle. Bind the interface in a service provider using a config value (`mail.custom_provider`). Use Laravel’s Mailable classes for templating.
+
+## Storage Strategy
+Default to local storage for uploads. Add support for S3-compatible storage (e.g., Backblaze, R2) using Laravel’s `Storage::disk('s3')->temporaryUrl(...)`. Proxy image access through Laravel routes to hide external URLs.
+
+## Recommended Packages
+- QR Codes: `simple-qrcode`
+- PDF: `barryvdh/laravel-dompdf`
+- Permissions: `spatie/laravel-permission`
+- CSV: `maatwebsite/excel`
+- Image Manipulation: `intervention/image`, `spatie/image`
+- Media Library: `spatie/laravel-medialibrary`
+- Cart & Checkout: `beyondcode/laravel-shoppingcart`, `laravel/cashier`
+- Subscriptions: `rinvex/laravel-subscriptions` (optional)
+- Email/SMS: `mailcoach` or `mailchimp-laravel`, `vonage/laravel`
+- Tagging: `spatie/laravel-tags`
+- Analytics: `spatie/laravel-analytics`, `consoletvs/charts`
+- Auditing: `owen-it/laravel-auditing`
+- HTTP: `guzzlehttp/guzzle`
+
+## Next Steps
+Start by scaffolding the `Job` module with:
+- Job model
+- JobController with CRUD
+- JobService for business logic
+- FormRequest for validation
+- routes.php with resource routes
+- Migration for jobs table
+
+Use Laravel 10+ best practices and PSR-4 autoloading. Keep everything CLI-first and version-controllable.
+

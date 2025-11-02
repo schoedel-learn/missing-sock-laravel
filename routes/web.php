@@ -1,0 +1,53 @@
+<?php
+
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ImageProxyController;
+use App\Http\Controllers\PreOrderController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// Homepage
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Pre-Order Form Routes with rate limiting
+Route::prefix('pre-order')->middleware(['throttle:30,1'])->group(function () {
+    // Start pre-order (redirects to Filament wizard)
+    Route::get('/start', [PreOrderController::class, 'start'])->name('pre-order.start');
+    
+    // Success page after order completion
+    Route::get('/success', [PreOrderController::class, 'success'])->name('pre-order.success');
+    
+    // Order confirmation (with order number)
+    Route::get('/confirmation/{registration}', [PreOrderController::class, 'confirmation'])
+        ->name('pre-order.confirmation');
+});
+
+// Additional pages
+Route::get('/privacy-policy', function () {
+    return view('pages.privacy-policy');
+})->name('privacy-policy');
+
+Route::get('/terms-of-service', function () {
+    return view('pages.terms-of-service');
+})->name('terms-of-service');
+
+Route::get('/cancellation-refund-policy', function () {
+    return view('pages.cancellation-policy');
+})->name('cancellation-policy');
+
+// Image proxy routes with rate limiting
+Route::prefix('images')->middleware(['throttle:60,1'])->group(function () {
+    Route::get('/proxy/{disk}/{path}', [ImageProxyController::class, 'proxy'])
+        ->where('path', '.*')
+        ->name('images.proxy');
+    
+    Route::get('/s3-temporary/{path}', [ImageProxyController::class, 'temporaryS3Url'])
+        ->where('path', '.*')
+        ->name('images.s3-temporary');
+});
+

@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Services;
+
+use App\Contracts\MailServiceInterface;
+use Illuminate\Mail\Mailable;
+
+class EmailService
+{
+    protected MailServiceInterface $mailService;
+
+    public function __construct(MailServiceInterface $mailService)
+    {
+        $this->mailService = $mailService;
+    }
+
+    /**
+     * Send an email notification.
+     *
+     * @param  Mailable  $mailable
+     * @param  string|null  $to
+     * @return bool
+     */
+    public function send(Mailable $mailable, ?string $to = null): bool
+    {
+        return $this->mailService->send($mailable, $to);
+    }
+
+    /**
+     * Send an email to multiple recipients.
+     *
+     * @param  Mailable  $mailable
+     * @param  array  $to
+     * @return bool
+     */
+    public function sendToMany(Mailable $mailable, array $to): bool
+    {
+        return $this->mailService->sendToMany($mailable, $to);
+    }
+
+    /**
+     * Get the current mail provider name.
+     *
+     * @return string
+     */
+    public function getProvider(): string
+    {
+        return $this->mailService->getProvider();
+    }
+}
+
