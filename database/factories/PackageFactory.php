@@ -26,7 +26,7 @@ class PackageFactory extends Factory
         ];
         
         $name = fake()->randomElement($packageNames);
-        $slug = \Illuminate\Support\Str::slug($name);
+        $slug = \Illuminate\Support\Str::slug($name) . '-' . fake()->unique()->numberBetween(1000, 9999);
         $priceCents = fake()->randomElement([2999, 4999, 7999, 9999, 12999, 15999]);
         
         return [

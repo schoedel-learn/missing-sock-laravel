@@ -96,6 +96,30 @@ class Order extends Model
     }
 
     /**
+     * Get the second package selection
+     */
+    public function secondPackage()
+    {
+        return $this->belongsTo(Package::class, 'second_package_id');
+    }
+
+    /**
+     * Get the third package selection
+     */
+    public function thirdPackage()
+    {
+        return $this->belongsTo(Package::class, 'third_package_id');
+    }
+
+    /**
+     * Get the sibling package selection
+     */
+    public function siblingPackage()
+    {
+        return $this->belongsTo(Package::class, 'sibling_package_id');
+    }
+
+    /**
      * Get add-ons
      */
     public function addOns()

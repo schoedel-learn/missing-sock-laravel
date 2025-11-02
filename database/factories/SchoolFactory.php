@@ -17,7 +17,8 @@ class SchoolFactory extends Factory
     public function definition(): array
     {
         $name = fake()->company() . ' ' . fake()->randomElement(['Elementary', 'Middle', 'High', 'Academy', 'School']);
-        $slug = \Illuminate\Support\Str::slug($name);
+        $uniqueId = fake()->unique()->numberBetween(1000, 9999);
+        $slug = \Illuminate\Support\Str::slug($name) . '-' . $uniqueId;
         
         return [
             'name' => $name,
