@@ -2,61 +2,75 @@
 
 namespace Tests\Unit\Services;
 
-use App\Contracts\MailServiceInterface;
+use App\Jobs\SendEmailJob;
 use App\Services\EmailService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Mail\Mailable;
-use Mockery;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class EmailServiceTest extends TestCase
 {
-    protected EmailService $emailService;
-    protected $mockMailService;
+    use RefreshDatabase;
 
-    protected function setUp(): void
+    public function test_email_is_queued_when_queue_is_enabled(): void
     {
-        parent::setUp();
+        Queue::fake();
         
-        $this->mockMailService = Mockery::mock(MailServiceInterface::class);
-        $this->emailService = new EmailService($this->mockMailService);
+        config(['queue.default' => 'database']); // Enable queueing
+
+        $emailService = app(EmailService::class);
+        $mailable = new class extends Mailable {
+            public function build()
+            {
+                return $this->subject('Test')->text('email.test');
+            }
+        };
+
+        $emailService->send($mailable, 'test@example.com');
+
+        Queue::assertPushed(SendEmailJob::class);
     }
 
-    protected function tearDown(): void
+    public function test_email_is_sent_synchronously_when_requested(): void
     {
-        Mockery::close();
-        parent::tearDown();
-    }
-
-    public function test_can_send_email(): void
-    {
-        $mailable = Mockery::mock(Mailable::class);
-        $recipient = 'test@example.com';
-
-        $this->mockMailService
-            ->shouldReceive('send')
-            ->once()
-            ->with($mailable, $recipient)
-            ->andReturn(true);
-
-        $result = $this->emailService->send($mailable, $recipient);
-
-        $this->assertTrue($result);
-    }
-
-    public function test_send_delegates_to_mail_service(): void
-    {
-        $mailable = Mockery::mock(Mailable::class);
-        $recipient = 'user@example.com';
-
-        $this->mockMailService
-            ->shouldReceive('send')
-            ->once()
-            ->with($mailable, $recipient)
-            ->andReturn(true);
-
-        $result = $this->emailService->send($mailable, $recipient);
+        Queue::fake();
         
-        $this->assertTrue($result);
+        config(['queue.default' => 'database']);
+
+        $emailService = app(EmailService::class);
+        $mailable = new class extends Mailable {
+            public function build()
+            {
+                return $this->subject('Test')->text('email.test');
+            }
+        };
+
+        // Request synchronous sending
+        $emailService->send($mailable, 'test@example.com', queue: false);
+
+        // Should not be queued
+        Queue::assertNothingPushed();
+    }
+
+    public function test_email_is_not_queued_when_sync_driver(): void
+    {
+        Queue::fake();
+        
+        config(['queue.default' => 'sync']); // Sync driver
+
+        $emailService = app(EmailService::class);
+        $mailable = new class extends Mailable {
+            public function build()
+            {
+                return $this->subject('Test')->text('email.test');
+            }
+        };
+
+        $emailService->send($mailable, 'test@example.com');
+
+        // Should not queue with sync driver
+        Queue::assertNothingPushed();
     }
 }
 

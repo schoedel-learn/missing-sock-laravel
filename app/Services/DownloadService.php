@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\GenerateDownloadArchive;
 use App\Models\Download;
 use App\Models\Order;
 use App\Models\Photo;
@@ -131,9 +132,10 @@ class DownloadService
      *
      * @param Order $order
      * @param int|null $expirationDays
+     * @param bool $queue  Whether to queue ZIP generation (default: true)
      * @return Download
      */
-    public function generateBatchDownloadLink(Order $order, ?int $expirationDays = null): Download
+    public function generateBatchDownloadLink(Order $order, ?int $expirationDays = null, bool $queue = true): Download
     {
         $expirationDays = $expirationDays ?? $this->defaultExpirationDays;
         $expiresAt = now()->addDays($expirationDays);
@@ -150,6 +152,7 @@ class DownloadService
                 'expires_at' => $expiresAt,
                 'max_attempts' => $this->defaultMaxAttempts,
                 'attempts' => 0,
+                'status' => 'pending',
             ]
         );
 
@@ -159,12 +162,18 @@ class DownloadService
                 $download->update([
                     'expires_at' => $expiresAt,
                     'attempts' => 0,
+                    'status' => 'pending',
                 ]);
             } elseif ($download->expires_at->lt(now()->addDays(2))) {
                 $download->update(['expires_at' => $expiresAt]);
             }
         } else {
             $download->update(['expires_at' => $expiresAt]);
+        }
+
+        // Dispatch job to generate ZIP archive
+        if ($queue && config('queue.default') !== 'sync') {
+            GenerateDownloadArchive::dispatch($download->id);
         }
 
         return $download->fresh();

@@ -23,6 +23,10 @@ return new class extends Migration
             $table->string('ip_address')->nullable();
             $table->text('user_agent')->nullable();
             $table->boolean('is_batch')->default(false); // For batch/ZIP downloads
+            $table->string('file_path')->nullable(); // Path to generated ZIP file
+            $table->bigInteger('file_size_bytes')->nullable(); // Size of ZIP file
+            $table->string('status')->default('pending'); // pending, processing, ready, failed
+            $table->text('error_message')->nullable(); // Error message if failed
             $table->timestamps();
 
             // Indexes

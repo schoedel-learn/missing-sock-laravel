@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\MailServiceInterface;
+use App\Jobs\SendEmailJob;
 use Illuminate\Mail\Mailable;
 
 class EmailService
@@ -19,10 +20,16 @@ class EmailService
      *
      * @param  Mailable  $mailable
      * @param  string|null  $to
+     * @param  bool  $queue  Whether to queue the email (default: true)
      * @return bool
      */
-    public function send(Mailable $mailable, ?string $to = null): bool
+    public function send(Mailable $mailable, ?string $to = null, bool $queue = true): bool
     {
+        if ($queue && config('queue.default') !== 'sync') {
+            SendEmailJob::dispatch($mailable, $to);
+            return true;
+        }
+
         return $this->mailService->send($mailable, $to);
     }
 

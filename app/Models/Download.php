@@ -26,6 +26,10 @@ class Download extends Model
         'ip_address',
         'user_agent',
         'is_batch', // For batch/ZIP downloads
+        'file_path', // Path to generated ZIP
+        'file_size_bytes', // Size of ZIP
+        'status', // pending, processing, ready, failed
+        'error_message', // Error details if failed
     ];
 
     /**
@@ -114,12 +118,22 @@ class Download extends Model
     }
 
     /**
+     * Get the photos relationship for batch downloads.
+     */
+    public function photos()
+    {
+        return $this->belongsToMany(Photo::class, 'download_photos')
+            ->withTimestamps();
+    }
+
+    /**
      * Scope to get active downloads.
      */
     public function scopeActive($query)
     {
         return $query->where('expires_at', '>', now())
-            ->whereColumn('attempts', '<', 'max_attempts');
+            ->whereColumn('attempts', '<', 'max_attempts')
+            ->where('status', 'ready');
     }
 
     /**
@@ -131,5 +145,13 @@ class Download extends Model
             $q->where('expires_at', '<=', now())
               ->orWhereColumn('attempts', '>=', 'max_attempts');
         });
+    }
+
+    /**
+     * Check if download is ready for use.
+     */
+    public function isReady(): bool
+    {
+        return $this->status === 'ready' && $this->isValid();
     }
 }
