@@ -1,4 +1,4 @@
-<nav class="bg-[#ECE9E6] shadow-md sticky top-0 z-50">
+<nav class="bg-background-main shadow-md sticky top-0 z-50">
     <div class="container-custom">
         <div class="flex justify-between items-center h-20">
             <!-- Logo -->
@@ -32,9 +32,9 @@
                 </a>
                 
                 <!-- CTA Button -->
-                <a href="{{ route('pre-order.start') }}" class="btn bg-[#FF5E3F] text-white hover:bg-[#E84A2F] rounded-lg px-6 py-3 font-semibold uppercase transition-all">
+                <x-ui.button href="{{ route('pre-order.start') }}" variant="primary" class="uppercase">
                     REGISTER FOR PICTURE DAY!
-                </a>
+                </x-ui.button>
             </div>
             
             <!-- Mobile menu button -->
@@ -42,7 +42,7 @@
                 <button 
                     type="button" 
                     id="mobile-menu-button"
-                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-[#FF5E3F] hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FF5E3F]"
+                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-primary hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                     aria-controls="mobile-menu"
                     aria-expanded="false"
                 >
@@ -63,22 +63,22 @@
     <!-- Mobile menu (hidden by default) -->
     <div class="md:hidden hidden" id="mobile-menu">
         <div class="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
-            <a href="{{ route('home') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF5E3F] hover:bg-gray-50">
+            <a href="{{ route('home') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors">
                 Home
             </a>
-            <a href="{{ route('home') }}#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF5E3F] hover:bg-gray-50">
+            <a href="{{ route('home') }}#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors">
                 About Us
             </a>
-            <a href="{{ route('home') }}#packages" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF5E3F] hover:bg-gray-50">
+            <a href="{{ route('home') }}#packages" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors">
                 Packages
             </a>
-            <a href="{{ route('home') }}#faq" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF5E3F] hover:bg-gray-50">
+            <a href="{{ route('home') }}#faq" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors">
                 FAQ
             </a>
-            <a href="{{ route('home') }}#contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF5E3F] hover:bg-gray-50">
+            <a href="{{ route('home') }}#contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors">
                 Contact
             </a>
-            <a href="{{ route('pre-order.start') }}" class="block px-3 py-2 rounded-md text-base font-medium bg-[#FF5E3F] text-white hover:bg-[#E84A2F] text-center mt-4 uppercase">
+            <a href="{{ route('pre-order.start') }}" class="block px-3 py-2 rounded-md text-base font-medium bg-primary text-white hover:bg-primary-hover text-center mt-4 uppercase transition-colors">
                 REGISTER FOR PICTURE DAY!
             </a>
         </div>

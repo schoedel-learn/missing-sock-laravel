@@ -44,14 +44,14 @@ return [
             'dark' => env('BRAND_WARNING_DARK', '#D68910'),
         ],
         'error' => [
-            'default' => env('BRAND_ERROR', '#E74C3C'),
-            'light' => env('BRAND_ERROR_LIGHT', '#FADBD8'),
-            'dark' => env('BRAND_ERROR_DARK', '#C0392B'),
+            'default' => env('BRAND_ERROR', '#f23a3c'),
+            'light' => env('BRAND_ERROR_LIGHT', '#fff4f4'),
+            'dark' => env('BRAND_ERROR_DARK', '#d32f31'),
         ],
         'info' => [
-            'default' => env('BRAND_INFO', '#3498DB'),
-            'light' => env('BRAND_INFO_LIGHT', '#EBF5FB'),
-            'dark' => env('BRAND_INFO_DARK', '#2874A6'),
+            'default' => env('BRAND_INFO', '#039dcf'),
+            'light' => env('BRAND_INFO_LIGHT', '#e6f5fa'),
+            'dark' => env('BRAND_INFO_DARK', '#027a9f'),
         ],
         'gray' => [
             900 => env('BRAND_GRAY_900', '#2C3E50'),
