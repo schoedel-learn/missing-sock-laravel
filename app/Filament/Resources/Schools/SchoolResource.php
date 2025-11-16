@@ -26,7 +26,7 @@ class SchoolResource extends Resource
 
     public static function getNavigationGroup(): UnitEnum|string|null
     {
-        return 'Operations';
+        return 'Photo Jobs';
     }
 
     public static function form(Schema $schema): Schema

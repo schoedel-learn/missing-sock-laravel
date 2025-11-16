@@ -13,6 +13,7 @@ class Registration extends Model
 
     protected $fillable = [
         'registration_number',
+        'user_id',
         'school_id',
         'project_id',
         'parent_first_name',
@@ -113,6 +114,14 @@ class Registration extends Model
     public function timeSlotBooking()
     {
         return $this->hasOne(TimeSlotBooking::class);
+    }
+
+    /**
+     * Get the user
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
 

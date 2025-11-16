@@ -13,6 +13,7 @@ class Order extends Model
 
     protected $fillable = [
         'order_number',
+        'user_id',
         'registration_id',
         'child_id',
         'main_package_id',
@@ -130,6 +131,14 @@ class Order extends Model
     }
 
     /**
+     * Get payments for this order
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
      * Get total in dollars
      */
     public function getTotalAttribute(): float
@@ -143,6 +152,14 @@ class Order extends Model
     public function getFormattedTotalAttribute(): string
     {
         return '$' . number_format($this->total_cents / 100, 2);
+    }
+
+    /**
+     * Get the user
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
 

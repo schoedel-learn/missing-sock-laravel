@@ -20,13 +20,18 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?int $navigationSort = 40;
+    protected static ?int $navigationSort = 30;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
 
     public static function getNavigationGroup(): UnitEnum|string|null
     {
-        return 'Pre-Orders';
+        return 'Orders';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Customer Orders';
     }
 
     public static function form(Schema $schema): Schema
@@ -49,7 +54,7 @@ class OrderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListOrders::route('/'),
+            'index' => \App\Filament\Resources\Orders\Pages\ManageOrders::route('/'),
             'create' => CreateOrder::route('/create'),
             'edit' => EditOrder::route('/{record}/edit'),
         ];
@@ -58,7 +63,7 @@ class OrderResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->with(['registration', 'child', 'mainPackage'])
+            ->with(['registration', 'child', 'mainPackage', 'payments'])
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);

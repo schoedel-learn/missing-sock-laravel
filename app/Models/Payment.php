@@ -11,6 +11,7 @@ class Payment extends Model
     use HasFactory, GeneratesUniqueNumbers;
 
     protected $fillable = [
+        'user_id',
         'registration_id',
         'order_id',
         'payment_number',
@@ -90,6 +91,14 @@ class Payment extends Model
     public function getFormattedAmountAttribute(): string
     {
         return '$' . number_format($this->amount_cents / 100, 2);
+    }
+
+    /**
+     * Get the user
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
 

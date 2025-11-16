@@ -25,6 +25,13 @@ Route::prefix('pre-order')->middleware(['throttle:30,1'])->group(function () {
     // Order confirmation (with order number)
     Route::get('/confirmation/{registration}', [PreOrderController::class, 'confirmation'])
         ->name('pre-order.confirmation');
+    
+    // Payment routes
+    Route::get('/payment/success/{order}', [PreOrderController::class, 'paymentSuccess'])
+        ->name('pre-order.payment.success');
+    
+    Route::get('/payment/cancel/{order}', [PreOrderController::class, 'paymentCancel'])
+        ->name('pre-order.payment.cancel');
 });
 
 // Additional pages

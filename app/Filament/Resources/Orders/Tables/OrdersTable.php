@@ -10,6 +10,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TabsFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +20,7 @@ class OrdersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['registration', 'child', 'mainPackage']))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['registration', 'child', 'mainPackage', 'payments']))
             ->columns([
                 TextColumn::make('order_number')
                     ->label('Order #')
@@ -71,6 +72,17 @@ class OrdersTable
                     ->label('Total')
                     ->sortable()
                     ->formatStateUsing(fn (?int $state) => $state === null ? '—' : '$' . number_format($state / 100, 2)),
+                TextColumn::make('payments.status')
+                    ->label('Payment Status')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state === 'succeeded' ? 'Paid' : ($state ? ucfirst($state) : 'Pending'))
+                    ->color(fn ($state): string => match($state) {
+                        'succeeded' => 'success',
+                        'pending' => 'warning',
+                        'failed' => 'danger',
+                        default => 'gray',
+                    })
+                    ->default('Pending'),
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime('M j, Y')
@@ -87,6 +99,21 @@ class OrdersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                TabsFilter::make('status')
+                    ->tabs([
+                        TabsFilter\Tab::make('All')
+                            ->modifyQueryUsing(fn (Builder $query) => $query),
+                        TabsFilter\Tab::make('Pending')
+                            ->modifyQueryUsing(fn (Builder $query) => $query->whereDoesntHave('payments', function ($query) {
+                                $query->where('status', 'succeeded');
+                            })),
+                        TabsFilter\Tab::make('Paid')
+                            ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('payments', function ($query) {
+                                $query->where('status', 'succeeded');
+                            })),
+                        TabsFilter\Tab::make('Today')
+                            ->modifyQueryUsing(fn (Builder $query) => $query->whereDate('created_at', today())),
+                    ]),
                 SelectFilter::make('main_package_id')
                     ->relationship('mainPackage', 'name')
                     ->label('Main Package'),
