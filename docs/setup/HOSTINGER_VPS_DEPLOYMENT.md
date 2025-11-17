@@ -177,10 +177,10 @@ sudo chown -R $USER:www-data missing-sock-laravel
 cd /var/www/missing-sock-laravel
 
 # Clone repository
-git clone https://github.com/your-username/missing-sock-laravel.git .
+git clone https://github.com/schoedel-learn/missing-sock-laravel.git .
 
 # Or if already in directory:
-git clone https://github.com/your-username/missing-sock-laravel.git temp
+git clone https://github.com/schoedel-learn/missing-sock-laravel.git temp
 mv temp/* temp/.* . 2>/dev/null
 rm -rf temp
 ```

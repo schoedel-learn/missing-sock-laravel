@@ -8,10 +8,20 @@ Quick reference for managing your Laravel application on Hostinger VPS.
 ## 🚀 Quick Installation
 
 ### Automated Installation (Recommended)
+
+**IMPORTANT:** Run these commands on your Hostinger VPS (after SSH), not on your local machine.
+
 ```bash
-# Download and run installation script
+# SSH into your VPS first
+ssh root@your-vps-ip-address
+
+# Then on your VPS, download and run the script:
 cd /tmp
-wget https://raw.githubusercontent.com/your-repo/missing-sock-laravel/main/scripts/hostinger-install.sh
+wget https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh
+sudo bash hostinger-install.sh
+
+# OR if wget is not available, use curl:
+curl -O https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh
 sudo bash hostinger-install.sh
 ```
 

@@ -52,10 +52,21 @@ npm run dev
 
 **Automated Installation (Recommended):**
 
+**Step 1:** SSH into your Hostinger VPS:
 ```bash
-# On your Hostinger VPS, run:
+ssh root@your-vps-ip-address
+```
+
+**Step 2:** Run the installation script on your VPS:
+```bash
+# Using wget (Ubuntu/Debian default)
 cd /tmp
-wget https://raw.githubusercontent.com/your-repo/missing-sock-laravel/main/scripts/hostinger-install.sh
+wget https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh
+sudo bash hostinger-install.sh
+
+# OR using curl (if wget not available)
+cd /tmp
+curl -O https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh
 sudo bash hostinger-install.sh
 ```
 

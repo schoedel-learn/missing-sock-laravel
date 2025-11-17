@@ -44,11 +44,14 @@ This script automates the entire deployment process:
 
 ```bash
 # SSH into your Hostinger VPS
-ssh root@your-vps-ip
+ssh root@your-vps-ip-address
 
-# Download the script
+# Download the script (using wget)
 cd /tmp
-wget https://raw.githubusercontent.com/your-username/missing-sock-laravel/main/scripts/hostinger-install.sh
+wget https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh
+
+# OR download using curl (if wget not available)
+curl -O https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh
 
 # Make it executable
 chmod +x hostinger-install.sh
@@ -61,11 +64,11 @@ sudo bash hostinger-install.sh
 
 ```bash
 # SSH into your Hostinger VPS
-ssh root@your-vps-ip
+ssh root@your-vps-ip-address
 
 # Clone the repository
 cd /tmp
-git clone https://github.com/your-username/missing-sock-laravel.git
+git clone https://github.com/schoedel-learn/missing-sock-laravel.git
 
 # Run the script
 cd missing-sock-laravel/scripts
@@ -75,8 +78,8 @@ sudo bash hostinger-install.sh
 **Option 3: One-Line Installation**
 
 ```bash
-# From your Hostinger VPS
-curl -s https://raw.githubusercontent.com/your-username/missing-sock-laravel/main/scripts/hostinger-install.sh | sudo bash
+# From your Hostinger VPS (after SSH)
+curl -s https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh | sudo bash
 ```
 
 #### Interactive Prompts
