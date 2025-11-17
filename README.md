@@ -27,6 +27,8 @@ missing-sock-laravel/
 
 ## 🚀 Quick Start
 
+### Local Development
+
 See `docs/setup/SETUP_GUIDE.md` for detailed installation instructions.
 
 ```bash
@@ -46,11 +48,29 @@ php artisan serve
 npm run dev
 ```
 
+### Hostinger VPS Deployment
+
+**Automated Installation (Recommended):**
+
+```bash
+# On your Hostinger VPS, run:
+cd /tmp
+wget https://raw.githubusercontent.com/your-repo/missing-sock-laravel/main/scripts/hostinger-install.sh
+sudo bash hostinger-install.sh
+```
+
+See `docs/setup/HOSTINGER_VPS_DEPLOYMENT.md` for complete step-by-step manual installation guide.
+
 ## 📚 Documentation
 
-- **Setup Guide:** `docs/setup/SETUP_GUIDE.md`
-- **Deployment Guide:** `docs/setup/DEPLOYMENT.md` (Production deployment to tms.opshub.photos)
+### Setup & Deployment
+- **Local Setup Guide:** `docs/setup/SETUP_GUIDE.md`
+- **Hostinger VPS Deployment:** `docs/setup/HOSTINGER_VPS_DEPLOYMENT.md` ⭐ **NEW**
+- **Hostinger Quick Reference:** `docs/setup/HOSTINGER_QUICK_REFERENCE.md` ⭐ **NEW**
+- **General Deployment Guide:** `docs/setup/DEPLOYMENT.md` (Production deployment to tms.opshub.photos)
 - **Deployment Checklist:** `DEPLOYMENT_CHECKLIST.md`
+
+### Other Documentation
 - **Migration Docs:** `docs/migration/` (JotForm migration)
 - **Brand Guidelines:** `docs/migration/JOTFORM_08_BRANDING_UI.md`
 - **Architecture:** `docs/analysis/ARCHITECTURE_CONSISTENCY.md`
