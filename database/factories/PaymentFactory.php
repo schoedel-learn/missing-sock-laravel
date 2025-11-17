@@ -20,6 +20,7 @@ class PaymentFactory extends Factory
         $amountCents = fake()->numberBetween(2999, 19999);
         
         return [
+            'user_id' => \App\Models\User::factory(),
             'registration_id' => \App\Models\Registration::factory(),
             'order_id' => fake()->optional()->passthrough(\App\Models\Order::factory()),
             'stripe_payment_intent_id' => fake()->optional()->bothify('pi_########################'),

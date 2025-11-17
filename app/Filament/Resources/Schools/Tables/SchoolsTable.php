@@ -25,6 +25,10 @@ class SchoolsTable
                     ->sortable()
                     ->searchable()
                     ->description(fn ($record) => $record->slug),
+                TextColumn::make('display_organization_label')
+                    ->label('Org Type')
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('projects_count')
                     ->label('Projects')
                     ->sortable()
@@ -72,6 +76,10 @@ class SchoolsTable
                         '1' => 'Active',
                         '0' => 'Inactive',
                     ]),
+                SelectFilter::make('organization_type')
+                    ->label('Organization Type')
+                    ->options(collect(\App\Enums\OrganizationType::cases())->mapWithKeys(fn ($type) => [$type->value => $type->label()]))
+                    ->searchable(),
                 TrashedFilter::make(),
             ])
             ->recordActions([

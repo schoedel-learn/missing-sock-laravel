@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Schools\Schemas;
 
+use App\Enums\OrganizationType;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Get;
@@ -38,12 +40,31 @@ class SchoolForm
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(ignoreRecord: true),
+                                Select::make('organization_type')
+                                    ->label('Organization Type')
+                                    ->options(collect(OrganizationType::cases())->mapWithKeys(fn ($type) => [$type->value => $type->label()]))
+                                    ->default(OrganizationType::School->value)
+                                    ->required(),
+                                TextInput::make('organization_label')
+                                    ->label('Display Label Override')
+                                    ->helperText('Optional custom name shown to parents (e.g., Team, League, Company).'),
                                 Toggle::make('is_active')
                                     ->inline(false)
                                     ->default(true)
                                     ->helperText('Inactive schools are hidden from registration flows.')
                                     ->columnSpanFull(),
                             ]),
+                    ]),
+                Section::make('Organization Coordinators')
+                    ->schema([
+                        Select::make('coordinators')
+                            ->relationship('coordinators', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
+                            ->helperText('Organization coordinators receive access to this group’s registrations, orders, and downloads.')
+                            ->placeholder('Select coordinators')
+                            ->columnSpanFull(),
                     ]),
                 Section::make('Contact Information')
                     ->schema([

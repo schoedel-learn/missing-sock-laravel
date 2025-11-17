@@ -23,6 +23,7 @@ class OrderFactory extends Factory
         $total = $subtotal + $shipping - $discount;
         
         return [
+            'user_id' => \App\Models\User::factory(),
             'registration_id' => \App\Models\Registration::factory(),
             'child_id' => \App\Models\Child::factory(),
             'main_package_id' => $mainPackage,

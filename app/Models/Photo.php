@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\URL;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -125,10 +126,7 @@ class Photo extends Model implements HasMedia
 
         // If using proxy, return proxied URL
         if (config('media-library.use_proxy', false)) {
-            return route('images.proxy', [
-                'disk' => $media->disk,
-                'path' => $media->getPath()
-            ]);
+            return $this->generateProxyUrl($media);
         }
 
         return $media->getUrl();
@@ -145,10 +143,7 @@ class Photo extends Model implements HasMedia
         }
 
         if (config('media-library.use_proxy', false)) {
-            return route('images.proxy', [
-                'disk' => $media->disk,
-                'path' => $media->getPath('thumb')
-            ]);
+            return $this->generateProxyUrl($media, 'thumb');
         }
 
         return $media->getUrl('thumb');
@@ -165,10 +160,7 @@ class Photo extends Model implements HasMedia
         }
 
         if (config('media-library.use_proxy', false)) {
-            return route('images.proxy', [
-                'disk' => $media->disk,
-                'path' => $media->getPath('medium')
-            ]);
+            return $this->generateProxyUrl($media, 'medium');
         }
 
         return $media->getUrl('medium');
@@ -185,10 +177,7 @@ class Photo extends Model implements HasMedia
         }
 
         if (config('media-library.use_proxy', false)) {
-            return route('images.proxy', [
-                'disk' => $media->disk,
-                'path' => $media->getPath('large')
-            ]);
+            return $this->generateProxyUrl($media, 'large');
         }
 
         return $media->getUrl('large');
@@ -238,5 +227,19 @@ class Photo extends Model implements HasMedia
     {
         return $query->where('is_featured', true);
     }
-}
 
+    protected function generateProxyUrl(Media $media, ?string $conversion = null): ?string
+    {
+        $expiryMinutes = config('storage.temporary_url_expiry', 60);
+        $relativePath = ltrim($media->getPathRelativeToRoot($conversion ?? ''), '/');
+
+        return URL::temporarySignedRoute(
+            'images.proxy',
+            now()->addMinutes($expiryMinutes),
+            [
+                'disk' => $media->disk,
+                'path' => $relativePath,
+            ]
+        );
+    }
+}

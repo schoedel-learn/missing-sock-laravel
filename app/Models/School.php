@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrganizationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,6 +14,8 @@ class School extends Model
     protected $fillable = [
         'name',
         'slug',
+        'organization_type',
+        'organization_label',
         'address',
         'city',
         'state',
@@ -25,6 +28,7 @@ class School extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'organization_type' => OrganizationType::class,
     ];
 
     /**
@@ -52,5 +56,18 @@ class School extends Model
     {
         return $this->hasMany(Registration::class);
     }
-}
 
+    public function coordinators()
+    {
+        return $this->belongsToMany(User::class, 'organization_user')->withTimestamps();
+    }
+
+    public function getDisplayOrganizationLabelAttribute(): string
+    {
+        if ($this->organization_label) {
+            return $this->organization_label;
+        }
+
+        return $this->organization_type?->label() ?? OrganizationType::School->label();
+    }
+}

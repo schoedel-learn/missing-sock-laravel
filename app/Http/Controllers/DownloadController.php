@@ -37,7 +37,7 @@ class DownloadController extends Controller
         }
 
         // Validate download record
-        if (!$downloadService->validateAccess($download, $request->user()?->id)) {
+        if (!$downloadService->validateAccess($download, $request->user())) {
             abort(403, 'Download link expired or access denied');
         }
 
@@ -105,7 +105,7 @@ class DownloadController extends Controller
         }
 
         // Validate download record
-        if (!$downloadService->validateAccess($download, $request->user()?->id)) {
+        if (!$downloadService->validateAccess($download, $request->user())) {
             abort(403, 'Download link expired or access denied');
         }
 

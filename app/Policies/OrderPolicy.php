@@ -13,8 +13,11 @@ class OrderPolicy
      */
     public function viewAny(?User $user): bool
     {
-        // Admin only
-        return $user !== null;
+        if (!$user) {
+            return false;
+        }
+
+        return $user->hasElevatedAccess() || $user->isOrganizationCoordinator();
     }
 
     /**
@@ -23,9 +26,21 @@ class OrderPolicy
      */
     public function view(?User $user, Order $order): bool
     {
-        // Public access allowed - orders are linked to registrations which are publicly viewable
-        // In production, add email verification or token-based access
-        return true;
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->hasElevatedAccess()) {
+            return true;
+        }
+
+        $schoolId = $order->registration?->school_id;
+
+        if ($user->managesOrganization($schoolId)) {
+            return true;
+        }
+
+        return $order->user_id === $user->id || $order->registration?->user_id === $user->id;
     }
 
     /**

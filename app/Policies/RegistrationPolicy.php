@@ -13,8 +13,11 @@ class RegistrationPolicy
      */
     public function viewAny(?User $user): bool
     {
-        // Admin only
-        return $user !== null;
+        if (!$user) {
+            return false;
+        }
+
+        return $user->hasElevatedAccess() || $user->isOrganizationCoordinator();
     }
 
     /**
@@ -23,9 +26,19 @@ class RegistrationPolicy
      */
     public function view(?User $user, Registration $registration): bool
     {
-        // Allow public access - registration confirmation pages are accessible via registration number
-        // In production, you may want to add additional checks (e.g., email verification token)
-        return true;
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->hasElevatedAccess()) {
+            return true;
+        }
+
+        if ($user->managesOrganization($registration->school_id)) {
+            return true;
+        }
+
+        return $registration->user_id === $user->id;
     }
 
     /**

@@ -46,6 +46,11 @@ class Registration extends Model
         'signature_date' => 'datetime',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'registration_number';
+    }
+
     /**
      * Boot method to generate registration number
      */
@@ -124,4 +129,3 @@ class Registration extends Model
         return $this->belongsTo(User::class);
     }
 }
-

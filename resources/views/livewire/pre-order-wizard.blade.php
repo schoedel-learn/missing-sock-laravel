@@ -22,15 +22,15 @@
     <!-- Form Card -->
     <div class="bg-white rounded-lg shadow-lg p-8">
         @if($currentStep == 1)
-            <!-- Step 1: School Selection & Registration Type -->
-            <h2 class="text-2xl font-bold mb-6">School Selection & Registration Type</h2>
+            <!-- Step 1: Organization Selection & Registration Type -->
+            <h2 class="text-2xl font-bold mb-6">{{ $organizationLabel }} Selection & Registration Type</h2>
             
             <div class="space-y-6">
                 <!-- School Selection -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Your Child's School *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Your {{ $organizationLabel }} *</label>
                     <select wire:model.live="schoolId" class="w-full border-gray-300 rounded-lg p-2">
-                        <option value="">Select a school...</option>
+                        <option value="">Select a {{ strtolower($organizationLabel) }}...</option>
                         @foreach($schools as $school)
                             <option value="{{ $school->id }}">{{ $school->name }}</option>
                         @endforeach

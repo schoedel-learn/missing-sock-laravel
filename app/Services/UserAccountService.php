@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -32,6 +33,7 @@ class UserAccountService
                 'name' => $name,
                 'email' => $email,
                 'password' => Hash::make(Str::random(32)), // Random password, user must reset
+                'role' => UserRole::Parent->value,
                 'email_verified_at' => null, // Email not verified yet
             ]);
         } else {
@@ -41,6 +43,10 @@ class UserAccountService
                 if ($name && ($user->name === 'Customer' || empty($user->name))) {
                     $user->update(['name' => $name]);
                 }
+            }
+
+            if ($user->role === null) {
+                $user->update(['role' => UserRole::Parent->value]);
             }
         }
 
@@ -60,4 +66,3 @@ class UserAccountService
         // This method is here for future customization if needed
     }
 }
-

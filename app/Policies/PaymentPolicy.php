@@ -13,8 +13,11 @@ class PaymentPolicy
      */
     public function viewAny(?User $user): bool
     {
-        // Admin only
-        return $user !== null;
+        if (!$user) {
+            return false;
+        }
+
+        return $user->hasElevatedAccess() || $user->isOrganizationCoordinator();
     }
 
     /**
@@ -23,14 +26,23 @@ class PaymentPolicy
      */
     public function view(?User $user, Payment $payment): bool
     {
-        // Admin can view all payments
-        if ($user !== null) {
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->hasElevatedAccess()) {
             return true;
         }
 
-        // Public access with restrictions - payments linked to registrations
-        // In production, implement email verification or token-based access
-        return true;
+        $schoolId = $payment->registration?->school_id ?? $payment->order?->registration?->school_id;
+
+        if ($user->managesOrganization($schoolId)) {
+            return true;
+        }
+
+        return $payment->user_id === $user->id
+            || $payment->registration?->user_id === $user->id
+            || $payment->order?->user_id === $user->id;
     }
 
     /**

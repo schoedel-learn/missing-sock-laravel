@@ -49,6 +49,8 @@ npm run dev
 ## 📚 Documentation
 
 - **Setup Guide:** `docs/setup/SETUP_GUIDE.md`
+- **Deployment Guide:** `docs/setup/DEPLOYMENT.md` (Production deployment to tms.opshub.photos)
+- **Deployment Checklist:** `DEPLOYMENT_CHECKLIST.md`
 - **Migration Docs:** `docs/migration/` (JotForm migration)
 - **Brand Guidelines:** `docs/migration/JOTFORM_08_BRANDING_UI.md`
 - **Architecture:** `docs/analysis/ARCHITECTURE_CONSISTENCY.md`

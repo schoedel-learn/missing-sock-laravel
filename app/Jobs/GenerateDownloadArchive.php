@@ -144,7 +144,7 @@ class GenerateDownloadArchive implements ShouldQueue
         }
 
         foreach ($photos as $index => $photo) {
-            $media = $photo->getFirstMedia('photos');
+            $media = $photo->getFirstMedia('original');
             
             if (!$media) {
                 continue;
@@ -194,4 +194,3 @@ class GenerateDownloadArchive implements ShouldQueue
         ]);
     }
 }
-

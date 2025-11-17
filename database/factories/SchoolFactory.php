@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\OrganizationType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,10 +20,12 @@ class SchoolFactory extends Factory
         $name = fake()->company() . ' ' . fake()->randomElement(['Elementary', 'Middle', 'High', 'Academy', 'School']);
         $uniqueId = fake()->unique()->numberBetween(1000, 9999);
         $slug = \Illuminate\Support\Str::slug($name) . '-' . $uniqueId;
+        $organizationType = OrganizationType::cases()[array_rand(OrganizationType::cases())];
         
         return [
             'name' => $name,
             'slug' => $slug,
+            'organization_type' => $organizationType->value,
             'address' => fake()->streetAddress(),
             'city' => fake()->city(),
             'state' => fake()->stateAbbr(),

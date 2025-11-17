@@ -27,6 +27,7 @@ class PreOrderWizard extends Component
     public $projectId;
     public $selectedProject;
     public $registrationType = 'prepay'; // 'prepay' or 'register_only'
+    public $organizationLabel = 'School';
     public $selectedBackdrops = [];
     public $hasTwoBackdrops = false;
     public $projectType;
@@ -117,6 +118,7 @@ class PreOrderWizard extends Component
         $this->availableBackdrops = [];
         $this->projectType = null;
         $this->registrationDeadline = null;
+        $this->organizationLabel = 'School';
         
         if ($value) {
             $school = School::with('currentProject')->find($value);
@@ -128,7 +130,21 @@ class PreOrderWizard extends Component
                 $this->projectType = $school->currentProject->type;
                 $this->registrationDeadline = $school->currentProject->registration_deadline?->format('m-d-Y');
             }
+
+            if ($school) {
+                $this->organizationLabel = $school->display_organization_label;
+            }
         }
+    }
+
+    public function updatedSelectedBackdrops($value)
+    {
+        if ($this->hasTwoBackdrops) {
+            $this->selectedBackdrops = array_values(array_filter((array) $value));
+            return;
+        }
+
+        $this->selectedBackdrops = $value ? [$value] : [];
     }
 
     public function updatedNumberOfChildren($value)

@@ -61,7 +61,7 @@ class ProcessPhotoUpload implements ShouldQueue
             // (Thumbnails are auto-generated via registerMediaConversions)
             // Force regeneration if needed
             if ($this->options['regenerate_thumbnails'] ?? false) {
-                $media = $photo->getFirstMedia('photos');
+                $media = $photo->getFirstMedia('original');
                 if ($media) {
                     $media->clearMediaConversions();
                     // Conversions will be regenerated on next access
@@ -95,7 +95,7 @@ class ProcessPhotoUpload implements ShouldQueue
      */
     protected function extractMetadata(Photo $photo): void
     {
-        $media = $photo->getFirstMedia('photos');
+        $media = $photo->getFirstMedia('original');
         
         if (!$media) {
             return;
@@ -163,4 +163,3 @@ class ProcessPhotoUpload implements ShouldQueue
         ]);
     }
 }
-

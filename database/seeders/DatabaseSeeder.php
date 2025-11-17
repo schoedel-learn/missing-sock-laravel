@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
+use App\Models\School;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,10 +18,23 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create test admin user
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $admin = User::factory()->admin()->create([
+            'name' => 'Test Admin',
+            'email' => 'admin@example.com',
         ]);
+
+        $coordinator = User::factory()->create([
+            'name' => 'Test Coordinator',
+            'email' => 'coordinator@example.com',
+            'role' => UserRole::OrganizationCoordinator->value,
+        ]);
+
+        $sampleSchool = School::factory()->create([
+            'name' => 'Sample Organization',
+            'slug' => 'sample-organization',
+        ]);
+
+        $sampleSchool->coordinators()->attach($coordinator->id);
 
         // Seed packages and add-ons first (they don't depend on other models)
         $this->call([

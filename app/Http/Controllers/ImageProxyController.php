@@ -21,6 +21,10 @@ class ImageProxyController extends Controller
     public function proxy(Request $request, string $disk, string $path)
     {
         try {
+            if (!$request->hasValidSignature()) {
+                abort(401, 'Invalid image link');
+            }
+
             // Validate disk
             if (!in_array($disk, ['local', 'public', 's3'])) {
                 abort(404, 'Invalid storage disk');
@@ -74,6 +78,10 @@ class ImageProxyController extends Controller
     public function temporaryS3Url(Request $request, string $path)
     {
         try {
+            if (!$request->hasValidSignature()) {
+                abort(401, 'Invalid image link');
+            }
+
             // Sanitize path to prevent directory traversal attacks
             $path = $this->sanitizePath($path);
 
@@ -130,5 +138,4 @@ class ImageProxyController extends Controller
         return true;
     }
 }
-
 

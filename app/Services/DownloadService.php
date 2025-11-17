@@ -6,6 +6,7 @@ use App\Jobs\GenerateDownloadArchive;
 use App\Models\Download;
 use App\Models\Order;
 use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Support\Facades\URL;
 
 class DownloadService
@@ -186,7 +187,7 @@ class DownloadService
      * @param int|null $userId
      * @return bool
      */
-    public function validateAccess(Download $download, ?int $userId = null): bool
+    public function validateAccess(Download $download, ?User $user = null): bool
     {
         // Check if expired
         if ($download->isExpired()) {
@@ -198,12 +199,32 @@ class DownloadService
             return false;
         }
 
-        // Check user access (if provided)
-        if ($userId !== null && $download->user_id !== $userId) {
+        if (!$user) {
             return false;
         }
 
-        return true;
+        if ($user->hasElevatedAccess()) {
+            return true;
+        }
+
+        if ($download->user_id === $user->id) {
+            return true;
+        }
+
+        $order = $download->order;
+        $registration = $order?->registration;
+        $orderUserId = $order?->user_id;
+        $registrationUserId = $registration?->user_id;
+
+        if (in_array($user->id, array_filter([$orderUserId, $registrationUserId]), true)) {
+            return true;
+        }
+
+        if ($user->managesOrganization($registration?->school_id)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -219,4 +240,3 @@ class DownloadService
         $download->markAsDownloaded($ipAddress, $userAgent);
     }
 }
-

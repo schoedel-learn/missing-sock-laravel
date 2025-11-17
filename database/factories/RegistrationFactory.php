@@ -17,6 +17,7 @@ class RegistrationFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => \App\Models\User::factory(),
             'school_id' => \App\Models\School::factory(),
             'project_id' => \App\Models\Project::factory(),
             'parent_first_name' => fake()->firstName(),

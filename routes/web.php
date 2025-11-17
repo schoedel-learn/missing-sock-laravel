@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageProxyController;
 use App\Http\Controllers\PreOrderController;
@@ -48,7 +49,7 @@ Route::get('/cancellation-refund-policy', function () {
 })->name('cancellation-policy');
 
 // Image proxy routes with rate limiting
-Route::prefix('images')->middleware(['throttle:60,1'])->group(function () {
+Route::prefix('images')->middleware(['auth', 'signed', 'throttle:60,1'])->group(function () {
     Route::get('/proxy/{disk}/{path}', [ImageProxyController::class, 'proxy'])
         ->where('path', '.*')
         ->name('images.proxy');
@@ -58,3 +59,15 @@ Route::prefix('images')->middleware(['throttle:60,1'])->group(function () {
         ->name('images.s3-temporary');
 });
 
+Route::prefix('downloads')->middleware(['auth', 'signed', 'throttle:30,1'])->group(function () {
+    Route::get('/photo/{photo}/{order}/{download}', [DownloadController::class, 'downloadPhoto'])
+        ->name('downloads.photo');
+
+    Route::get('/batch/{order}/{download}', [DownloadController::class, 'downloadBatch'])
+        ->name('downloads.batch');
+});
+
+// Health check endpoint for Coolify/deployment monitoring
+Route::get('/up', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()]);
+})->name('health');

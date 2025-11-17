@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('organization_type')->default('school');
+            $table->string('organization_label')->nullable();
             $table->string('address')->nullable();
             $table->string('city')->nullable();
             $table->string('state', 2)->nullable();

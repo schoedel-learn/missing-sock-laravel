@@ -71,31 +71,47 @@ class PreOrderController extends Controller
             Stripe::setApiKey(config('services.stripe.secret'));
             $session = Session::retrieve($sessionId);
 
-            // Verify session matches order
-            if ($session->metadata->order_id != $order->id) {
+            if ((int) ($session->metadata->order_id ?? 0) !== (int) $order->id) {
                 return redirect()->route('pre-order.start')
                     ->with('error', 'Payment session mismatch.');
             }
 
-            // Get or create user
+            if ((int) ($session->metadata->user_id ?? 0) !== (int) $order->user_id) {
+                return redirect()->route('pre-order.start')
+                    ->with('error', 'Order ownership mismatch.');
+            }
+
+            if (!in_array($session->payment_status, ['paid'], true) || $session->status !== 'complete') {
+                return redirect()->route('pre-order.start')
+                    ->with('error', 'Payment has not been completed.');
+            }
+
+            if ((int) $session->amount_total !== (int) $order->total_cents) {
+                return redirect()->route('pre-order.start')
+                    ->with('error', 'Payment amount mismatch.');
+            }
+
             $user = User::find($session->metadata->user_id);
             if (!$user) {
                 return redirect()->route('pre-order.start')
                     ->with('error', 'User not found.');
             }
 
-            // Create payment record
-            $payment = Payment::create([
-                'user_id' => $user->id,
-                'registration_id' => $order->registration_id,
-                'order_id' => $order->id,
-                'stripe_payment_intent_id' => $session->payment_intent,
-                'stripe_customer_id' => $session->customer ?? null,
-                'amount_cents' => $order->total_cents,
-                'currency' => 'usd',
-                'status' => 'succeeded',
-                'paid_at' => now(),
-            ]);
+            $payment = Payment::updateOrCreate(
+                [
+                    'stripe_payment_intent_id' => $session->payment_intent,
+                ],
+                [
+                    'user_id' => $user->id,
+                    'registration_id' => $order->registration_id,
+                    'order_id' => $order->id,
+                    'stripe_customer_id' => $session->customer ?? null,
+                    'amount_cents' => $order->total_cents,
+                    'currency' => 'usd',
+                    'status' => 'succeeded',
+                    'paid_at' => now(),
+                ]
+            );
 
             // Update order status (if you have a status field)
             // $order->update(['status' => 'paid']);
@@ -125,4 +141,3 @@ class PreOrderController extends Controller
             ->with('info', 'Payment was cancelled. You can complete payment later from your account.');
     }
 }
-
