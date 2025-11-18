@@ -1004,7 +1004,7 @@
         @endif
 
         <!-- Navigation Buttons -->
-        @if($currentStep < 10)
+        @if($currentStep < 12)
         <div class="flex justify-between mt-8">
             @if($currentStep > 1)
                 <button wire:click="previousStep" type="button" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -1014,11 +1014,11 @@
                 <div></div>
             @endif
 
-            @if($currentStep < 9)
+            @if($currentStep < 11)
                 <button wire:click="nextStep" type="button" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover">
                     Next
                 </button>
-            @elseif($currentStep == 9)
+            @elseif($currentStep == 11)
                 <button wire:click="submit" type="button" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover">
                     {{ $registrationType === 'prepay' ? 'Proceed to Payment' : 'Submit Registration' }}
                 </button>
