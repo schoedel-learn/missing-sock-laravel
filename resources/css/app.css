@@ -539,8 +539,8 @@
   
   /* Navigation */
   .nav-link {
+    @apply inline-flex items-center px-3 py-2 rounded-md font-medium;
     @apply text-gray-700 hover:text-primary transition-colors duration-base;
-    @apply font-medium;
   }
   
   .nav-link.active {

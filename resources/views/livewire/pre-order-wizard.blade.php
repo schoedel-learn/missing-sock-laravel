@@ -21,6 +21,18 @@
 
     <!-- Form Card -->
     <div class="bg-white rounded-lg shadow-lg p-8">
+        <!-- Validation Errors Display -->
+        @if($errors->any())
+            <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                <h3 class="text-red-800 font-semibold mb-2">Please fix the following errors:</h3>
+                <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         @if($currentStep == 1)
             <!-- Step 1: Organization Selection & Registration Type -->
             <h2 class="text-2xl font-bold mb-6">{{ $organizationLabel }} Selection & Registration Type</h2>
@@ -86,7 +98,7 @@
                             <div class="space-y-2">
                                 @foreach($availableBackdrops as $backdrop)
                                     <label class="flex items-center">
-                                        <input type="radio" wire:model="selectedBackdrops" value="{{ $backdrop }}" class="mr-2">
+                                        <input type="radio" wire:model.live="selectedBackdrops" value="{{ $backdrop }}" class="mr-2">
                                         <span>{{ ucfirst($backdrop) }}</span>
                                     </label>
                                 @endforeach
@@ -161,11 +173,12 @@
                 <!-- reCAPTCHA Placeholder -->
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <p class="text-sm text-gray-600 mb-2">reCAPTCHA Verification *</p>
-                    <div class="bg-gray-200 h-20 rounded flex items-center justify-center">
-                        <p class="text-sm text-gray-500">reCAPTCHA widget will be integrated here</p>
+                    <div class="bg-green-100 border border-green-300 h-20 rounded flex items-center justify-center">
+                        <p class="text-sm text-green-700 font-medium">✓ reCAPTCHA verified (placeholder for development)</p>
                     </div>
                     <input type="hidden" wire:model="recaptchaVerified" value="1">
                     @error('recaptchaVerified') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <p class="text-xs text-gray-500 mt-2">Note: Real Google reCAPTCHA integration needed for production</p>
                 </div>
             </div>
 
@@ -492,7 +505,46 @@
             </div>
 
         @elseif($currentStep == 7)
-            <!-- Step 7: Shipping (Conditional Logic Rule 9) -->
+            <!-- Step 7: Add-Ons -->
+            <h2 class="text-2xl font-bold mb-6">Enhance Your Order</h2>
+            
+            <div class="space-y-6">
+                <p class="text-gray-600 mb-4">Select any additional products you'd like to add to your order:</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach($addOns as $addOn)
+                        <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all {{ in_array($addOn->id, $selectedAddOns ?? []) ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
+                            <input 
+                                type="checkbox" 
+                                wire:model.live="selectedAddOns" 
+                                value="{{ $addOn->id }}" 
+                                class="mt-1 mr-3 h-5 w-5 text-blue-600 rounded"
+                            >
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="font-semibold text-gray-900">{{ $addOn->name }}</span>
+                                    <span class="font-bold text-blue-600 ml-2">${{ number_format($addOn->price_cents / 100, 2) }}</span>
+                                </div>
+                                @if($addOn->description)
+                                    <p class="text-sm text-gray-600">{{ $addOn->description }}</p>
+                                @endif
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+
+                @if(count($selectedAddOns) > 0)
+                    <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p class="text-sm text-blue-800">
+                            <strong>Add-Ons Selected:</strong> {{ count($selectedAddOns) }} item(s) - 
+                            <strong>${{ number_format($addOnsTotal / 100, 2) }}</strong>
+                        </p>
+                    </div>
+                @endif
+            </div>
+
+        @elseif($currentStep == 8)
+            <!-- Step 8: Shipping (Conditional Logic Rule 9) -->
             <h2 class="text-2xl font-bold mb-6">Shipping</h2>
             
             <div class="space-y-6">
@@ -559,8 +611,8 @@
                 @endif
             </div>
 
-        @elseif($currentStep == 8)
-            <!-- Step 8: Ordering Preferences -->
+        @elseif($currentStep == 9)
+            <!-- Step 9: Ordering Preferences -->
             <h2 class="text-2xl font-bold mb-6">Ordering Preferences</h2>
             
             <div class="space-y-6">
@@ -571,14 +623,14 @@
                     </label>
                     <div class="space-y-2">
                         <label class="flex items-start p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                            <input type="radio" wire:model="autoSelectImages" value="1" class="mt-1 mr-3">
+                            <input type="radio" wire:model.live="autoSelectImages" value="1" class="mt-1 mr-3">
                             <div>
                                 <span class="font-semibold">Yes, please select the images for me</span>
                                 <p class="text-sm text-gray-600">if I don't make a selection within 5 days.</p>
                             </div>
                         </label>
                         <label class="flex items-start p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                            <input type="radio" wire:model="autoSelectImages" value="0" class="mt-1 mr-3">
+                            <input type="radio" wire:model.live="autoSelectImages" value="0" class="mt-1 mr-3">
                             <div>
                                 <span class="font-semibold">No</span>
                                 <p class="text-sm text-gray-600">and I understand that I am responsible for selecting the images and handling shipping fees if I miss the 5-day deadline.</p>
@@ -604,8 +656,154 @@
                 </div>
             </div>
 
-        @elseif($currentStep == 9)
-            <!-- Step 9: Order Summary -->
+        @elseif($currentStep == 10)
+            <!-- Step 10: Signature & Agreement -->
+            <h2 class="text-2xl font-bold mb-6">Photo Session Participation Agreement</h2>
+            
+            <div class="space-y-6">
+                <!-- Agreement Text -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 max-h-96 overflow-y-auto">
+                    <div class="space-y-4 text-sm text-gray-700">
+                        <p>
+                            <strong>1. Permission to Photograph:</strong> I hereby grant The Missing Sock Photography and its authorized representatives permission to photograph my child(ren) during the scheduled photo session. I understand that these photographs may be used for the purposes of creating prints, digital images, and other products as part of the photography services provided.
+                        </p>
+                        <p>
+                            <strong>2. COPPA Compliance:</strong> I acknowledge that I am the parent or legal guardian of the child(ren) listed in this registration. I understand that The Missing Sock Photography complies with the Children's Online Privacy Protection Act (COPPA) and that any personal information collected will be used solely for the purpose of providing photography services and will not be shared with third parties without my consent.
+                        </p>
+                        <p>
+                            <strong>3. Email Communications:</strong> By providing my email address, I consent to receive email communications regarding my order, including order confirmations, gallery access notifications, shipping updates, and other order-related information. I understand that I may opt-out of marketing emails at any time while still receiving essential order-related communications.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Agreement Checkbox -->
+                <div class="border-t pt-4">
+                    <label class="flex items-start">
+                        <input 
+                            type="checkbox" 
+                            wire:model.live="agreementAccepted" 
+                            class="mt-1 mr-3 h-5 w-5 text-blue-600 rounded"
+                        >
+                        <span class="text-sm text-gray-700">
+                            I have read and understand the terms and conditions stated above. I agree to the Photo Session Participation Agreement and consent to the photography services as described. *
+                        </span>
+                    </label>
+                    @error('agreementAccepted') 
+                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <!-- Signature Pad -->
+                <div class="border-t pt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Digital Signature * <span class="text-gray-500 font-normal">(Please sign below)</span>
+                    </label>
+                    <div class="border-2 border-gray-300 rounded-lg bg-white" style="position: relative;">
+                        <canvas 
+                            id="signatureCanvas" 
+                            wire:ignore
+                            class="w-full cursor-crosshair"
+                            style="touch-action: none; min-height: 150px;"
+                        ></canvas>
+                        <div class="p-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+                            <button 
+                                type="button" 
+                                onclick="clearSignature()" 
+                                class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                            >
+                                Clear
+                            </button>
+                            <p class="text-xs text-gray-500">Sign with your mouse or touch screen</p>
+                        </div>
+                    </div>
+                    @error('signatureData') 
+                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                    @enderror
+                </div>
+
+                <!-- Coupon Code -->
+                <div class="border-t pt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Coupon Code <span class="text-gray-500 font-normal">(Optional)</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <input 
+                            type="text" 
+                            wire:model="couponCode" 
+                            placeholder="Enter coupon code"
+                            class="flex-1 border-gray-300 rounded-lg p-2"
+                        >
+                        <button 
+                            type="button" 
+                            wire:click="applyCouponCode"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            Apply
+                        </button>
+                    </div>
+                    @if($couponDiscount > 0)
+                        <p class="text-sm text-green-600 mt-2">✓ Coupon applied! Discount: ${{ number_format($couponDiscount / 100, 2) }}</p>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Signature Pad Library -->
+            <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+            
+            <!-- Signature Pad Script -->
+            <script>
+                let signaturePad = null;
+                let canvas = null;
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    canvas = document.getElementById('signatureCanvas');
+                    if (canvas && typeof SignaturePad !== 'undefined') {
+                        signaturePad = new SignaturePad(canvas, {
+                            backgroundColor: 'rgb(255, 255, 255)',
+                            penColor: 'rgb(0, 0, 0)',
+                            minWidth: 1,
+                            maxWidth: 3,
+                        });
+
+                        // Resize canvas
+                        function resizeCanvas() {
+                            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                            canvas.width = canvas.offsetWidth * ratio;
+                            canvas.height = canvas.offsetHeight * ratio;
+                            canvas.getContext('2d').scale(ratio, ratio);
+                            signaturePad.clear();
+                        }
+                        resizeCanvas();
+                        window.addEventListener('resize', resizeCanvas);
+
+                        // Save signature on change
+                        signaturePad.addEventListener('endStroke', function() {
+                            if (!signaturePad.isEmpty()) {
+                                @this.set('signatureData', signaturePad.toDataURL());
+                            }
+                        });
+                    }
+                });
+
+                function clearSignature() {
+                    if (signaturePad) {
+                        signaturePad.clear();
+                        @this.set('signatureData', null);
+                    }
+                }
+
+                // Listen for Livewire updates
+                document.addEventListener('livewire:init', () => {
+                    Livewire.on('signature-cleared', () => {
+                        if (signaturePad) {
+                            signaturePad.clear();
+                        }
+                    });
+                });
+            </script>
+
+        @elseif($currentStep == 11)
+            <!-- Step 11: Order Summary -->
             <h2 class="text-2xl font-bold mb-6">Order Summary</h2>
             
             <div class="space-y-4">
@@ -679,6 +877,20 @@
                                 <span>${{ number_format($classPicturePrice / 100, 2) }}</span>
                             </div>
                         @endif
+                        @if($addOnsTotal > 0)
+                            <div class="flex justify-between pt-2 border-t">
+                                <span class="font-medium">Add-Ons:</span>
+                                <span>${{ number_format($addOnsTotal / 100, 2) }}</span>
+                            </div>
+                            @foreach($addOns as $addOn)
+                                @if(in_array($addOn->id, $selectedAddOns ?? []))
+                                    <div class="flex justify-between text-sm pl-4 text-gray-600">
+                                        <span>• {{ $addOn->name }}</span>
+                                        <span>${{ number_format($addOn->price_cents / 100, 2) }}</span>
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endif
                         @if($shippingCost > 0)
                             <div class="flex justify-between">
                                 <span>Shipping:</span>
@@ -699,8 +911,8 @@
                 </div>
             </div>
 
-        @elseif($currentStep == 10)
-            <!-- Step 10: Authorization & Payment / Confirmation -->
+        @elseif($currentStep == 12)
+            <!-- Step 12: Authorization & Payment / Confirmation -->
             @if($registrationNumber)
                 <!-- Confirmation -->
                 <div class="text-center">

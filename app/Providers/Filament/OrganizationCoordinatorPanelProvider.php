@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Enums\UserRole;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,9 +11,6 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use App\Enums\UserRole;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -20,33 +18,28 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class AdminPanelProvider extends PanelProvider
+class OrganizationCoordinatorPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
-            ->id('admin')
-            ->path('admin')
-            ->login()
+            ->id('coordinator')
+            ->path('coordinator')
+            ->login(\App\Filament\Coordinator\Auth\Login::class)
+            ->passwordReset()
+            ->profile()
             ->colors([
-                'primary' => Color::hex('#FF5E3F'), // Coral Orange brand color
+                'primary' => Color::hex('#FF5E3F'), // Coral Orange
             ])
             ->brandName('The Missing Sock Photography')
             ->brandLogo(asset('assets/logos/LOGO_LOGOLARGE-74.webp'))
             ->favicon(asset('favicon.ico'))
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->discoverResources(in: app_path('Filament/Coordinator/Resources'), for: 'App\\Filament\\Coordinator\\Resources')
+            ->discoverPages(in: app_path('Filament/Coordinator/Pages'), for: 'App\\Filament\\Coordinator\\Pages')
             ->pages([
-                \App\Filament\Pages\Dashboard::class,
+                Dashboard::class,
             ])
-            ->login(\App\Filament\Auth\Login::class)
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
-                \App\Filament\Widgets\OrdersStatsWidget::class,
-                \App\Filament\Widgets\RegistrationsStatsWidget::class,
-                \App\Filament\Widgets\RecentOrdersWidget::class,
-            ])
+            ->discoverWidgets(in: app_path('Filament/Coordinator/Widgets'), for: 'App\\Filament\\Coordinator\\Widgets')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -63,3 +56,4 @@ class AdminPanelProvider extends PanelProvider
             ]);
     }
 }
+

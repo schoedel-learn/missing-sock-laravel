@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageProxyController;
@@ -14,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 
 // Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Central Login Routes
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Pre-Order Form Routes with rate limiting
 Route::prefix('pre-order')->middleware(['throttle:30,1'])->group(function () {
@@ -67,7 +73,7 @@ Route::prefix('downloads')->middleware(['auth', 'signed', 'throttle:30,1'])->gro
         ->name('downloads.batch');
 });
 
-// Health check endpoint for Coolify/deployment monitoring
+// Health check endpoint for deployment monitoring
 Route::get('/up', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()]);
 })->name('health');
