@@ -6,6 +6,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use App\Enums\UserRole;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -24,7 +25,7 @@ class UserPanelProvider extends PanelProvider
         return $panel
             ->id('user')
             ->path('my-account')
-            ->login()
+            ->login(\App\Filament\User\Auth\Login::class)
             ->registration()
             ->passwordReset()
             ->emailVerification()

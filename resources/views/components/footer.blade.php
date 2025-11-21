@@ -37,6 +37,13 @@
                     <li><a href="{{ route('home') }}#packages" class="text-gray-600 hover:text-gray-900 transition-colors">Packages</a></li>
                     <li><a href="{{ route('home') }}#faq" class="text-gray-600 hover:text-gray-900 transition-colors">FAQ</a></li>
                     <li><a href="{{ route('pre-order.start') }}" class="text-gray-600 hover:text-gray-900 transition-colors">Pre-Order</a></li>
+                    <li>
+                        @auth
+                            <a href="{{ route('filament.user.pages.dashboard') }}" class="text-gray-600 hover:text-gray-900 transition-colors">My Account</a>
+                        @else
+                            <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-900 transition-colors font-medium">Login</a>
+                        @endauth
+                    </li>
                 </ul>
             </div>
             

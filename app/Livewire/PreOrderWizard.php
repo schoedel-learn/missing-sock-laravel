@@ -9,6 +9,7 @@ use App\Models\Registration;
 use App\Models\Order;
 use App\Models\Child;
 use App\Models\User;
+use App\Models\AddOn;
 use App\Services\UserAccountService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -20,7 +21,7 @@ class PreOrderWizard extends Component
     use WithFileUploads;
 
     public $currentStep = 1;
-    public $totalSteps = 10;
+    public $totalSteps = 12; // Updated to include Add-Ons and Signature steps
 
     // Step 1: School Selection & Registration Type
     public $schoolId;
@@ -68,7 +69,11 @@ class PreOrderWizard extends Component
     public $classPictureSize;
     public $classPicturePrice = 0;
 
-    // Step 7: Shipping
+    // Step 7: Add-Ons
+    public $selectedAddOns = []; // Array of add-on IDs
+    public $addOnsTotal = 0;
+
+    // Step 8: Shipping
     public $shippingMethod = 'school'; // 'school' or 'home'
     public $shippingAddress;
     public $shippingAddressLine2;
@@ -77,17 +82,23 @@ class PreOrderWizard extends Component
     public $shippingZip;
     public $shippingCost = 0; // $7 if home shipping
 
-    // Step 8: Ordering Preferences
-    public $autoSelectImages = false;
+    // Step 9: Ordering Preferences
+    public $autoSelectImages = null; // null, true, or false
     public $specialInstructions;
     public $emailOptIn = false;
 
-    // Step 9: Order Summary
+    // Step 10: Signature & Agreement
+    public $agreementAccepted = false;
+    public $signatureData = null; // Base64 image data
+    public $couponCode = null;
+    public $couponDiscount = 0; // Discount amount in cents
+
+    // Step 11: Order Summary
     public $subtotal = 0;
     public $discount = 0;
     public $total = 0;
 
-    // Step 10: Confirmation
+    // Step 12: Confirmation
     public $registrationNumber;
     public $orderNumber;
     public $paymentSessionId;
@@ -108,6 +119,9 @@ class PreOrderWizard extends Component
                 'date_of_birth' => '',
             ]
         ];
+        
+        // Auto-verify reCAPTCHA for development (placeholder - replace with real integration)
+        $this->recaptchaVerified = true;
     }
 
     public function updatedSchoolId($value)
@@ -128,7 +142,9 @@ class PreOrderWizard extends Component
                 $this->hasTwoBackdrops = $school->currentProject->has_two_backdrops ?? false;
                 $this->availableBackdrops = $school->currentProject->available_backdrops ?? [];
                 $this->projectType = $school->currentProject->type;
-                $this->registrationDeadline = $school->currentProject->registration_deadline?->format('m-d-Y');
+                $this->registrationDeadline = $school->currentProject->registration_deadline 
+                    ? $school->currentProject->registration_deadline->format('m-d-Y') 
+                    : null;
             }
 
             if ($school) {
@@ -258,6 +274,52 @@ class PreOrderWizard extends Component
         $this->calculateTotal();
     }
 
+    public function updatedAutoSelectImages($value)
+    {
+        // Convert string "1" or "0" to boolean
+        $this->autoSelectImages = $value === "1" || $value === 1 || $value === true;
+    }
+
+    public function updatedClassPictureSize($value)
+    {
+        // Calculate class picture price based on size
+        $prices = [
+            '8x10' => 2000, // $20.00 in cents
+            '11x14' => 2400, // $24.00 in cents
+            'panorama_5x20' => 4000, // $40.00 in cents
+        ];
+        $this->classPicturePrice = $prices[$value] ?? 0;
+        $this->calculateTotal();
+    }
+
+    public function updatedSelectedAddOns($value)
+    {
+        // Calculate add-ons total
+        $this->addOnsTotal = 0;
+        if (is_array($this->selectedAddOns)) {
+            foreach ($this->selectedAddOns as $addOnId) {
+                $addOn = AddOn::find($addOnId);
+                if ($addOn) {
+                    $this->addOnsTotal += $addOn->price_cents;
+                }
+            }
+        }
+        $this->calculateTotal();
+    }
+
+    public function applyCouponCode()
+    {
+        // TODO: Implement coupon code validation
+        // For now, just a placeholder
+        if ($this->couponCode) {
+            // This would typically check against a coupons table
+            // For now, we'll leave it as 0 discount
+            $this->couponDiscount = 0;
+            $this->discount = $this->couponDiscount;
+            $this->calculateTotal();
+        }
+    }
+
     public function calculateTotal()
     {
         $this->subtotal = 0;
@@ -297,11 +359,15 @@ class PreOrderWizard extends Component
         $this->subtotal += $this->premiumRetouchPrice;
         $this->subtotal += $this->classPicturePrice;
         $this->subtotal += $this->siblingSpecialFee;
+        
+        // Add selected add-ons
+        $this->subtotal += $this->addOnsTotal;
 
         // Shipping
         $this->subtotal += $this->shippingCost;
 
-        // Apply discount if any
+        // Apply discount (coupon discount)
+        $this->discount = $this->couponDiscount;
         $this->total = $this->subtotal - $this->discount;
     }
 
@@ -314,6 +380,10 @@ class PreOrderWizard extends Component
                 ->get()
             : collect();
         $packages = Package::where('is_active', true)->orderBy('sort_order')->get();
+        $addOns = AddOn::where('is_active', true)
+            ->whereIn('slug', ['extra-smiles', 'big-moments', 'memory-mug', 'digital-add-on'])
+            ->orderBy('sort_order')
+            ->get();
 
         // Calculate total whenever render is called
         $this->calculateTotal();
@@ -322,6 +392,7 @@ class PreOrderWizard extends Component
             'schools' => $schools,
             'projects' => $projects,
             'packages' => $packages,
+            'addOns' => $addOns,
         ]);
     }
 
@@ -405,6 +476,9 @@ class PreOrderWizard extends Component
                 $this->validate($rules);
                 break;
             case 7:
+                // Add-ons step - no validation required (optional)
+                break;
+            case 8:
                 if ($this->shippingMethod === 'home') {
                     $this->validate([
                         'shippingAddress' => 'required|string|max:255',
@@ -413,6 +487,22 @@ class PreOrderWizard extends Component
                         'shippingZip' => 'required|string|max:10',
                     ]);
                 }
+                break;
+            case 9:
+                $this->validate([
+                    'autoSelectImages' => 'required|boolean',
+                ], [
+                    'autoSelectImages.required' => 'Please select whether you want us to auto-select images for you.',
+                ]);
+                break;
+            case 10:
+                $this->validate([
+                    'agreementAccepted' => 'accepted',
+                    'signatureData' => 'required|string',
+                ], [
+                    'agreementAccepted.accepted' => 'You must accept the agreement to continue.',
+                    'signatureData.required' => 'Please provide your signature.',
+                ]);
                 break;
         }
     }
@@ -451,6 +541,8 @@ class PreOrderWizard extends Component
             'auto_select_images' => $this->autoSelectImages,
             'special_instructions' => $this->specialInstructions,
             'email_opt_in' => $this->emailOptIn,
+            'signature_data' => $this->signatureData,
+            'signature_date' => $this->signatureData ? now() : null,
             'status' => 'pending',
         ]);
 
@@ -497,8 +589,22 @@ class PreOrderWizard extends Component
                 'subtotal_cents' => $this->subtotal,
                 'shipping_cents' => $this->shippingCost,
                 'discount_cents' => $this->discount,
+                'coupon_code' => $this->couponCode,
                 'total_cents' => $this->total,
             ]);
+
+            // Attach add-ons to order
+            if (!empty($this->selectedAddOns)) {
+                foreach ($this->selectedAddOns as $addOnId) {
+                    $addOn = AddOn::find($addOnId);
+                    if ($addOn) {
+                        $order->addOns()->attach($addOnId, [
+                            'quantity' => 1,
+                            'price_cents' => $addOn->price_cents,
+                        ]);
+                    }
+                }
+            }
 
             $this->pendingOrderId = $order->id;
             $this->orderNumber = $order->order_number;
@@ -507,7 +613,7 @@ class PreOrderWizard extends Component
             $this->createStripeCheckoutSession($order, $user);
         } else {
             // Register only - no payment needed
-            $this->currentStep = 10; // Go to confirmation step
+            $this->currentStep = 12; // Go to confirmation step
         }
     }
 
@@ -546,8 +652,8 @@ class PreOrderWizard extends Component
             $this->paymentSessionId = $checkoutSession->id;
             $this->stripeCheckoutUrl = $checkoutSession->url;
             
-            // Move to step 10 to show redirect message
-            $this->currentStep = 10;
+            // Move to step 12 to show redirect message
+            $this->currentStep = 12;
         } catch (\Exception $e) {
             session()->flash('error', 'Payment processing error: ' . $e->getMessage());
             $this->addError('payment', 'Unable to process payment. Please try again.');

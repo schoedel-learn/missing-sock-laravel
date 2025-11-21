@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, Billable;
@@ -117,5 +119,19 @@ class User extends Authenticatable
         }
 
         return $this->organizations()->where('school_id', $organizationId)->exists();
+    }
+
+    /**
+     * Determine if the user can access the given panel
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return match ($panel->getId()) {
+            'admin' => $this->hasRole(UserRole::Admin),
+            'user' => $this->hasRole(UserRole::Parent),
+            'coordinator' => $this->hasRole(UserRole::OrganizationCoordinator),
+            'photo-manager' => $this->hasRole(UserRole::PhotoManager),
+            default => false,
+        };
     }
 }

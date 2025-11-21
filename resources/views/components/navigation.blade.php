@@ -1,6 +1,6 @@
 <nav class="bg-background-main shadow-md sticky top-0 z-50">
     <div class="container-custom">
-        <div class="flex justify-between items-center h-20">
+        <div class="flex items-center justify-between h-20 gap-8">
             <!-- Logo -->
             <div class="flex-shrink-0">
                 <a href="{{ route('home') }}" class="flex items-center">
@@ -13,26 +13,41 @@
                 </a>
             </div>
             
-            <!-- Desktop Navigation -->
-            <div class="hidden md:flex md:items-center md:space-x-8">
-                <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
-                    Home
-                </a>
-                <a href="{{ route('home') }}#about" class="nav-link">
-                    About Us
-                </a>
-                <a href="{{ route('home') }}#packages" class="nav-link">
-                    Packages
-                </a>
-                <a href="{{ route('home') }}#faq" class="nav-link">
-                    FAQ
-                </a>
-                <a href="{{ route('home') }}#contact" class="nav-link">
-                    Contact
-                </a>
+            <!-- Desktop Navigation - Centered with flex gap-6 for primary menu -->
+            <nav class="hidden md:flex items-center justify-center flex-1" aria-label="Main navigation">
+                <div class="flex gap-6">
+                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+                        Home
+                    </a>
+                    <a href="{{ route('home') }}#about" class="nav-link">
+                        About Us
+                    </a>
+                    <a href="{{ route('home') }}#packages" class="nav-link">
+                        Packages
+                    </a>
+                    <a href="{{ route('home') }}#faq" class="nav-link">
+                        FAQ
+                    </a>
+                    <a href="{{ route('home') }}#contact" class="nav-link">
+                        Contact
+                    </a>
+                </div>
+            </nav>
+            
+            <!-- Login/Account Section - Right Aligned -->
+            <div class="hidden md:flex items-center gap-4 flex-shrink-0">
+                @auth
+                    <a href="{{ route('filament.user.pages.dashboard') }}" class="nav-link whitespace-nowrap">
+                        My Account
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-secondary text-sm whitespace-nowrap">
+                        Login
+                    </a>
+                @endauth
                 
                 <!-- CTA Button -->
-                <x-ui.button href="{{ route('pre-order.start') }}" variant="primary" class="uppercase">
+                <x-ui.button href="{{ route('pre-order.start') }}" variant="primary" class="uppercase whitespace-nowrap">
                     REGISTER FOR PICTURE DAY!
                 </x-ui.button>
             </div>
@@ -78,6 +93,15 @@
             <a href="{{ route('home') }}#contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors">
                 Contact
             </a>
+            @auth
+                <a href="{{ route('filament.user.pages.dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors">
+                    My Account
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-secondary w-full justify-center text-sm mt-1">
+                    Login
+                </a>
+            @endauth
             <a href="{{ route('pre-order.start') }}" class="block px-3 py-2 rounded-md text-base font-medium bg-primary text-white hover:bg-primary-hover text-center mt-4 uppercase transition-colors">
                 REGISTER FOR PICTURE DAY!
             </a>
