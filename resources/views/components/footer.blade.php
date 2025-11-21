@@ -82,9 +82,9 @@
         <div class="border-t border-gray-200 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
             <p>&copy; {{ date('Y') }} The Missing Sock Photography. All rights reserved.</p>
             <div class="flex space-x-6 mt-4 md:mt-0">
-                <a href="#" class="hover:text-gray-900 transition-colors">Privacy Policy</a>
-                <a href="#" class="hover:text-gray-900 transition-colors">Terms of Service</a>
-                <a href="#" class="hover:text-gray-900 transition-colors">Cancellation & Refund Policy</a>
+                <a href="{{ route('privacy-policy') }}" class="hover:text-gray-900 transition-colors">Privacy Policy</a>
+                <a href="{{ route('terms-of-service') }}" class="hover:text-gray-900 transition-colors">Terms of Service</a>
+                <a href="{{ route('cancellation-policy') }}" class="hover:text-gray-900 transition-colors">Cancellation & Refund Policy</a>
             </div>
         </div>
     </div>

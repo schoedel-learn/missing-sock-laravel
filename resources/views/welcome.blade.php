@@ -390,7 +390,7 @@
                 I'M A SCHOOL DIRECTOR AND WISH TO BOOK A PICTURE DAY
             </x-ui.button>
             <x-ui.button 
-                href="#" 
+                href="mailto:info@themissingsock.photo?subject=Family%20Session%20Booking" 
                 variant="secondary" 
                 size="lg"
                 class="uppercase"
