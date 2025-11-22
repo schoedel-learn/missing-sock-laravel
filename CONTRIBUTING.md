@@ -221,11 +221,16 @@ Instead:
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (Laravel 9+)
 php artisan test
+
+# OR use PHPUnit directly
+vendor/bin/phpunit
 
 # Run specific test file
 php artisan test tests/Feature/PreOrderTest.php
+# OR
+vendor/bin/phpunit tests/Feature/PreOrderTest.php
 
 # Run with coverage (if configured)
 php artisan test --coverage

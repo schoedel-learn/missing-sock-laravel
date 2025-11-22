@@ -30,14 +30,15 @@ jobs:
             FOUND=1
           fi
           
-          if [ -f "config/database.php" ] && grep -q "password.*=>" config/database.php 2>/dev/null; then
+          # Check for hardcoded credentials in config files (Laravel-specific check)
+          if [ -f "config/database.php" ]; then
             if grep -q "password.*=>.*['\"][^'\"]*['\"]" config/database.php 2>/dev/null; then
               echo "⚠️  WARNING: database.php may contain hardcoded passwords"
             fi
           fi
           
           # Check for common patterns of secrets in committed files
-          if git diff --cached --name-only | xargs grep -l "password.*=.*['\"].*['\"]" 2>/dev/null; then
+          if git diff origin/main...HEAD --name-only | xargs grep -l "password.*=.*['\"].*['\"]" 2>/dev/null; then
             echo "⚠️  WARNING: Files may contain hardcoded passwords"
           fi
           

@@ -11,7 +11,7 @@ This repository contains proprietary code for The Missing Sock Photography. Whil
 If you discover a security vulnerability in this codebase:
 
 1. **Do not disclose publicly** - This includes GitHub issues, discussions, or social media
-2. **Email the repository administrator directly** at the contact associated with @schoedel-learn
+2. **Contact the repository administrator** - Use GitHub's private vulnerability reporting feature or contact @schoedel-learn directly through their GitHub profile
 3. **Include detailed information:**
    - Description of the vulnerability
    - Steps to reproduce
