@@ -1,0 +1,17 @@
+# Code Owners for The Missing Sock Photography Repository
+#
+# This file defines individuals or teams that are responsible for code in this repository.
+# When someone opens a pull request that modifies code owned by a code owner,
+# the code owner is automatically requested for review.
+#
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+# This ensures all PRs require review from repository administrators
+* @schoedel-learn
+
+# Specific ownership rules can be added below as needed
+# Examples:
+# /docs/ @schoedel-learn
+# /config/ @schoedel-learn
+# *.php @schoedel-learn
