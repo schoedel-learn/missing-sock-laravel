@@ -179,6 +179,39 @@ If you would like, we can create a separate, host-specific deployment guide (for
 
 ---
 
+## Repository Management and Branch Protection
+
+This is a **public repository containing client-specific proprietary work**. The `main` branch is protected to ensure code quality and prevent unauthorized changes.
+
+### For Contributors
+
+- **Never commit directly to `main`**
+- Always work in feature branches
+- Create pull requests for all changes
+- Wait for code owner approval before merging
+
+### Setting Up Branch Protection
+
+If you are a repository administrator, see **[BRANCH_PROTECTION_GUIDE.md](./BRANCH_PROTECTION_GUIDE.md)** for detailed instructions on:
+- Configuring GitHub branch protection rules
+- Setting up required reviews and status checks
+- Managing collaborators and permissions
+- Best practices for protected branches
+
+### Pull Request Workflow
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Make your changes and commit
+3. Push: `git push origin feature/your-feature`
+4. Open a pull request on GitHub
+5. Fill out the PR template completely
+6. Wait for review and approval
+7. Merge after approval and passing checks
+
+For more details, see the [Branch Protection Guide](./BRANCH_PROTECTION_GUIDE.md).
+
+---
+
 ## License
 
 Proprietary – The Missing Sock Photography

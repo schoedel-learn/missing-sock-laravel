@@ -1,0 +1,147 @@
+name: PR Checks
+
+# This workflow runs on pull requests to ensure code quality and catch issues early
+# It can be used as a required status check for branch protection
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  # Basic checks that should always pass
+  pr-validation:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for sensitive files
+        run: |
+          echo "Checking for sensitive files that should not be committed..."
+          FOUND=0
+          
+          # Check for common sensitive files
+          if [ -f ".env" ]; then
+            echo "❌ ERROR: .env file found - this should not be committed!"
+            FOUND=1
+          fi
+          
+          if [ -f "config/database.php" ] && grep -q "password.*=>" config/database.php 2>/dev/null; then
+            if grep -q "password.*=>.*['\"][^'\"]*['\"]" config/database.php 2>/dev/null; then
+              echo "⚠️  WARNING: database.php may contain hardcoded passwords"
+            fi
+          fi
+          
+          # Check for common patterns of secrets in committed files
+          if git diff --cached --name-only | xargs grep -l "password.*=.*['\"].*['\"]" 2>/dev/null; then
+            echo "⚠️  WARNING: Files may contain hardcoded passwords"
+          fi
+          
+          if [ $FOUND -eq 0 ]; then
+            echo "✅ No obvious sensitive files detected"
+          fi
+          
+          exit $FOUND
+
+      - name: Check for large files
+        run: |
+          echo "Checking for unexpectedly large files..."
+          LARGE_FILES=$(find . -type f -size +5M ! -path "./.git/*" ! -path "*/vendor/*" ! -path "*/node_modules/*" ! -path "*/storage/*" 2>/dev/null || true)
+          
+          if [ -n "$LARGE_FILES" ]; then
+            echo "⚠️  WARNING: Large files detected:"
+            echo "$LARGE_FILES"
+            echo "Consider using Git LFS for large binary files"
+          else
+            echo "✅ No unexpectedly large files detected"
+          fi
+
+      - name: Validate composer.json
+        run: |
+          if [ -f "composer.json" ]; then
+            echo "Validating composer.json syntax..."
+            if command -v composer &> /dev/null; then
+              composer validate --no-check-all --no-check-publish
+            else
+              echo "Composer not available, checking JSON syntax only..."
+              if command -v jq &> /dev/null; then
+                jq empty composer.json
+              else
+                python3 -m json.tool composer.json > /dev/null
+              fi
+            fi
+            echo "✅ composer.json is valid"
+          fi
+
+      - name: Validate package.json
+        run: |
+          if [ -f "package.json" ]; then
+            echo "Validating package.json syntax..."
+            if command -v jq &> /dev/null; then
+              jq empty package.json
+            else
+              python3 -m json.tool package.json > /dev/null
+            fi
+            echo "✅ package.json is valid"
+          fi
+
+      - name: Check Git configuration
+        run: |
+          echo "Verifying Git configuration..."
+          
+          # Check that .gitignore exists
+          if [ ! -f ".gitignore" ]; then
+            echo "⚠️  WARNING: No .gitignore file found"
+          else
+            echo "✅ .gitignore file exists"
+          fi
+          
+          # Check that .env is in .gitignore
+          if [ -f ".gitignore" ] && grep -q "^\.env$" .gitignore; then
+            echo "✅ .env is properly ignored"
+          else
+            echo "⚠️  WARNING: .env may not be in .gitignore"
+          fi
+
+      - name: PR Summary
+        run: |
+          echo "🎉 Basic PR validation checks completed successfully!"
+          echo ""
+          echo "Next steps:"
+          echo "1. Ensure all review comments are addressed"
+          echo "2. Verify manual testing has been performed"
+          echo "3. Confirm client impact is documented in PR description"
+          echo "4. Wait for code owner approval"
+
+  # Optional: Add more sophisticated checks if needed
+  # Uncomment and configure these as your project grows
+  
+  # php-syntax:
+  #   name: PHP Syntax Check
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup PHP
+  #       uses: shivammathur/setup-php@v2
+  #       with:
+  #         php-version: '8.2'
+  #     - name: Check PHP syntax
+  #       run: find . -name "*.php" ! -path "*/vendor/*" -exec php -l {} \;
+
+  # phpunit:
+  #   name: PHPUnit Tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup PHP
+  #       uses: shivammathur/setup-php@v2
+  #       with:
+  #         php-version: '8.2'
+  #     - name: Install dependencies
+  #       run: composer install --prefer-dist --no-progress
+  #     - name: Run tests
+  #       run: php artisan test
