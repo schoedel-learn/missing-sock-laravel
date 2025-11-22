@@ -67,6 +67,9 @@ Architecturally, the app is structured to let you change and grow without rewrit
   - You can add resources (e.g., Orders, Schools, Projects), widgets (dashboards), and custom pages per role.
   - Role-based access is handled via `UserRole` and Filament’s `FilamentUser` contract.
 
+### Local Development
+
+See `docs/setup/SETUP_GUIDE.md` for detailed installation instructions.
 - Livewire preorder wizard
   - The multi-step form is a Livewire component (`PreOrderWizard`) with a Blade view.
   - Steps, validation rules, and transitions are explicit and testable.
@@ -149,6 +152,43 @@ php artisan serve    # or use Sail / Valet / Forge-style setup
 npm run dev          # Tailwind + Vite
 ```
 
+### Hostinger VPS Deployment
+
+**Automated Installation (Recommended):**
+
+**Step 1:** SSH into your Hostinger VPS:
+```bash
+ssh root@your-vps-ip-address
+```
+
+**Step 2:** Run the installation script on your VPS:
+```bash
+# Using wget (Ubuntu/Debian default)
+cd /tmp
+wget https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh
+sudo bash hostinger-install.sh
+
+# OR using curl (if wget not available)
+cd /tmp
+curl -O https://raw.githubusercontent.com/schoedel-learn/missing-sock-laravel/main/scripts/hostinger-install.sh
+sudo bash hostinger-install.sh
+```
+
+See `docs/setup/HOSTINGER_VPS_DEPLOYMENT.md` for complete step-by-step manual installation guide.
+
+## 📚 Documentation
+
+### Setup & Deployment
+- **Local Setup Guide:** `docs/setup/SETUP_GUIDE.md`
+- **Hostinger VPS Deployment:** `docs/setup/HOSTINGER_VPS_DEPLOYMENT.md` ⭐ **NEW**
+- **Hostinger Quick Reference:** `docs/setup/HOSTINGER_QUICK_REFERENCE.md` ⭐ **NEW**
+- **General Deployment Guide:** `docs/setup/DEPLOYMENT.md` (Production deployment to tms.opshub.photos)
+- **Deployment Checklist:** `DEPLOYMENT_CHECKLIST.md`
+
+### Other Documentation
+- **Migration Docs:** `docs/migration/` (JotForm migration)
+- **Brand Guidelines:** `docs/migration/JOTFORM_08_BRANDING_UI.md`
+- **Architecture:** `docs/analysis/ARCHITECTURE_CONSISTENCY.md`
 ---
 
 ## Deployment notes (high-level)
@@ -176,6 +216,39 @@ Typical production deployment steps:
 4. Ensure a queue worker is running for background jobs.
 
 If you would like, we can create a separate, host-specific deployment guide (for example, “Deploying to Laravel Forge” or “Deploying to Vapor”) that lives alongside this README.
+
+---
+
+## Repository Management and Branch Protection
+
+This is a **public repository containing client-specific proprietary work**. The `main` branch is protected to ensure code quality and prevent unauthorized changes.
+
+### For Contributors
+
+- **Never commit directly to `main`**
+- Always work in feature branches
+- Create pull requests for all changes
+- Wait for code owner approval before merging
+
+### Setting Up Branch Protection
+
+If you are a repository administrator, see **[BRANCH_PROTECTION_GUIDE.md](./BRANCH_PROTECTION_GUIDE.md)** for detailed instructions on:
+- Configuring GitHub branch protection rules
+- Setting up required reviews and status checks
+- Managing collaborators and permissions
+- Best practices for protected branches
+
+### Pull Request Workflow
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Make your changes and commit
+3. Push: `git push origin feature/your-feature`
+4. Open a pull request on GitHub
+5. Fill out the PR template completely
+6. Wait for review and approval
+7. Merge after approval and passing checks
+
+For more details, see the [Branch Protection Guide](./BRANCH_PROTECTION_GUIDE.md).
 
 ---
 
